@@ -1,4 +1,4 @@
-package org.clear.util;
+package org.clear.framework.util;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;

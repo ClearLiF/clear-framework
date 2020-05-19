@@ -1,12 +1,13 @@
-package org.clear.helper;
+package org.clear.framework.helper;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
-import org.clear.util.CollectionUtil;
-import org.clear.util.PropsUtil;
+
+import org.clear.framework.util.CollectionUtil;
+import org.clear.framework.util.PropsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
@@ -31,16 +32,19 @@ public class DatabaseHelper {
     private static final ThreadLocal<Connection> CONNECTION_HOLDER;
     //用于dbcp链接池的数据源
     private static final BasicDataSource DATA_SOURCE;
-
     static {
         CONNECTION_HOLDER = new ThreadLocal<>();
         QUERY_RUNNER = new QueryRunner();
 
-        Properties conf = PropsUtil.loadProps("config.properties");
-        String driver = conf.getProperty("jdbc.driver");
+       // Properties conf = PropsUtil.loadProps("clear.properties");
+        /*String driver = conf.getProperty("jdbc.driver");
         String url = conf.getProperty("jdbc.url");
         String username = conf.getProperty("jdbc.username");
-        String password = conf.getProperty("jdbc.password");
+        String password = conf.getProperty("jdbc.password");*/
+        String driver = ConfigHelper.getJdbcDriver();
+        String url = ConfigHelper.getJdbcUrl();
+        String username = ConfigHelper.getJdbcUsername();
+        String password = ConfigHelper.getJdbcPassword();
 
         DATA_SOURCE = new BasicDataSource();
         DATA_SOURCE.setDriverClassName(driver);
@@ -156,6 +160,7 @@ public class DatabaseHelper {
         int rows = 0;
         try {
             Connection conn = getConnection();
+            //使用commons-dbutils的api
             rows = QUERY_RUNNER.update(conn, sql, params);
         } catch (SQLException e) {
             logger.error("execute update failure", e);
@@ -166,7 +171,7 @@ public class DatabaseHelper {
 
     /**
      * 插入实体
-     * @param entityClass
+     * @param entityClass 实体类
      * @param fieldMap
      * @param <T>
      * @return
@@ -254,6 +259,7 @@ public class DatabaseHelper {
         try {
             String sql;
             while ((sql = br.readLine()) != null) {
+                //除去注释项
                 if (!sql.substring(0, 1).equals("#") && !sql.substring(0, 1).equals("--")) {
                     executeUpdate(sql);
                 }

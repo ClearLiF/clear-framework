@@ -1,4 +1,4 @@
-package org.clear.util;
+package org.clear.framework.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
