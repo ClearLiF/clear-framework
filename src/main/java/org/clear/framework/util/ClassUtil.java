@@ -12,20 +12,22 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
 /***
- * @author : CLEAR Li
- * @version : V1.0
- * @className : ClassUtil
- * @packageName : org.clear.framework.util
- * @description : 类加载器
- * @date : 2020-05-06 22:17
- **/
+ * @author  : CLEAR Li
+ * @version  : V1.0
+ * @className  : ClassUtil
+ * @packageName  : org.clear.framework.util
+ * @description  : 类加载器
+ * @date  : 2020-05-06 22:17
+ */
 public final class ClassUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassUtil.class);
 
     /**
      * 获取类加载器
-     * @return
+     *
+     * @return class loader
      */
     public static ClassLoader getClassLoader() {
         return Thread.currentThread().getContextClassLoader();
@@ -33,9 +35,10 @@ public final class ClassUtil {
 
     /**
      * 加载类
-     * @param className
-     * @param isInitialized
-     * @return
+     *
+     * @param className     the class name
+     * @param isInitialized the is initialized
+     * @return class
      */
     public static Class<?> loadClass(String className, boolean isInitialized) {
         Class<?> clz;
@@ -50,12 +53,12 @@ public final class ClassUtil {
 
     /**
      * 无建议(默认)
-     * @description 获取指定包名下的所有类
-     *              需要根据包名转换为路径，读取class文件或者jar包，获取指定类名去加载类
+     *
+     * @param packageName the package name
+     * @return java.util.Set<java.lang.Class < ?> >
+     * @description 获取指定包名下的所有类               需要根据包名转换为路径，读取class文件或者jar包，获取指定类名去加载类
      * @author ClearLi
-     * @date 2020/5/6 22:22
-     * @param packageName
-     * @return java.util.Set<java.lang.Class < ?>>
+     * @date 2020 /5/6 22:22
      */
     public static Set<Class<?>> getClassSet(String packageName) {
         Set<Class<?>> classSet = new HashSet<Class<?>>();
@@ -136,9 +139,14 @@ public final class ClassUtil {
     }
 
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
         try {
-            Enumeration<URL> urls = getClassLoader().getResources("org.smart4j.framework".replace(".", "/"));
+            Enumeration<URL> urls = getClassLoader().getResources("D:/IDEAWorkSpace2/clear-framework/target/classes/org/clear/framework".replace(".", "/"));
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
                 System.out.println(url.getPath());

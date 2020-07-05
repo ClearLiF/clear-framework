@@ -10,15 +10,25 @@ import java.util.Properties;
 
 /**
  * 无建议(默认)
- * @description 加载配置文件
+ *
  * @author ClearLi
- * @date 2020/5/6 20:53
+ * @description 加载配置文件
+ * @date 2020 /5/6 20:53
  */
 public final class PropsUtil {
     private static final Logger logger = LoggerFactory.getLogger(PropsUtil.class);
 
     /**
      * 加载属性文件
+     */
+    /**
+     * 无建议(默认)
+     *
+     * @param fileName 属性文件名
+     * @return java.util.Properties properties
+     * @description 加载属性文件
+     * @author ClearLi
+     * @date 2020 /6/29 17:24
      */
     public static Properties loadProps(String fileName) {
         Properties props = null;
@@ -46,7 +56,14 @@ public final class PropsUtil {
     }
 
     /**
-     * 获取字符型属性（默认值为空字符串）
+     * 无建议(默认)
+     *
+     * @param props 配置对象
+     * @param key   key值
+     * @return java.lang.String string
+     * @description 获取字符型属性 （默认值为空字符串）
+     * @author ClearLi
+     * @date 2020 /6/29 17:31
      */
     public static String getString(Properties props, String key) {
         return getString(props, key, "");
@@ -54,6 +71,11 @@ public final class PropsUtil {
 
     /**
      * 获取字符型属性（可指定默认值）
+     *
+     * @param props        the props
+     * @param key          the key
+     * @param defaultValue the default value
+     * @return the string
      */
     public static String getString(Properties props, String key, String defaultValue) {
         String value = defaultValue;
@@ -65,6 +87,10 @@ public final class PropsUtil {
 
     /**
      * 获取数值型属性（默认值为0）
+     *
+     * @param props the props
+     * @param key   the key
+     * @return the int
      */
     public static int getInt(Properties props, String key) {
         return getInt(props, key, 0);
@@ -72,6 +98,11 @@ public final class PropsUtil {
 
     /**
      * 获取数值型属性（可指定默认值）
+     *
+     * @param props        the props
+     * @param key          the key
+     * @param defaultValue the default value
+     * @return the int
      */
     public static int getInt(Properties props, String key, int defaultValue) {
         int value = defaultValue;
@@ -83,6 +114,10 @@ public final class PropsUtil {
 
     /**
      * 获取布尔型属性（默认值为false）
+     *
+     * @param props the props
+     * @param key   the key
+     * @return the boolean
      */
     public static boolean getBoolean(Properties props, String key) {
         return getBoolean(props, key, false);
@@ -90,6 +125,11 @@ public final class PropsUtil {
 
     /**
      * 获取布尔型属性（可指定默认值）
+     *
+     * @param props        the props
+     * @param key          the key
+     * @param defaultValue the default value
+     * @return the boolean
      */
     public static boolean getBoolean(Properties props, String key, Boolean defaultValue) {
         boolean value = defaultValue;
