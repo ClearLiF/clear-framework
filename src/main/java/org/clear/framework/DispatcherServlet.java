@@ -1,5 +1,6 @@
 package org.clear.framework;
 
+import lombok.extern.slf4j.Slf4j;
 import org.clear.framework.bean.*;
 import org.clear.framework.helper.BeanHelper;
 import org.clear.framework.helper.ConfigHelper;
@@ -29,6 +30,7 @@ import java.util.Map;
  * @description : 一般类
  * @date : 2020-07-06 16:36
  **/
+@Slf4j
 @WebServlet(urlPatterns = "/*", loadOnStartup = 0)
 public class DispatcherServlet extends HttpServlet {
     @Override
@@ -37,23 +39,28 @@ public class DispatcherServlet extends HttpServlet {
         HelperLoader.init();
         // 获取 ServletContext 对象（用来注册Servlet）
         ServletContext servletContext = config.getServletContext();
-
-        // 注册处理 JSP 的 Servlet
-        ServletRegistration jspRegistration = servletContext.getServletRegistration("jsp");
-        jspRegistration.addMapping(ConfigHelper.getAppJspPath() + "*");
-        // 注册处理静态资源的默认 Servlet
-        ServletRegistration defaultRegistration = servletContext.getServletRegistration("default");
-        defaultRegistration.addMapping(ConfigHelper.getAppAssetPath() + "*");
+        registerServlet(servletContext);
     }
+    private void registerServlet(ServletContext servletContext) {
+        ServletRegistration jspServlet = servletContext.getServletRegistration("jsp");
+        jspServlet.addMapping("/index.jsp");
+        jspServlet.addMapping(ConfigHelper.getAppJspPath() + "*");
 
+        ServletRegistration defaultServlet = servletContext.getServletRegistration("default");
+        defaultServlet.addMapping("/favicon.ico");
+        defaultServlet.addMapping(ConfigHelper.getAppAssetPath() + "*");
+    }
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //
         String requestMethod = req.getMethod().toLowerCase();
         String requestPath = req.getPathInfo();
-
+        //例如 post , /login
         Handler handler = ControllerHelper.getHandler(requestMethod, requestPath);
+        log.error("请求的方法和地址为"+requestMethod+" : "+requestPath);
+
         if (handler != null) {
+            log.error("请求的方法为"+handler.getActionMethod().getName());
             // 获取 Controller 类及其 Bean 实例
             Class<?> controllerClass = handler.getControllerClass();
             Object controllerBean = BeanHelper.getBean(controllerClass);

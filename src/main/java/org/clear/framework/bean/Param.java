@@ -11,7 +11,7 @@ import java.util.Map;
  * @version : V1.0
  * @className : Param
  * @packageName : org.clear.framework.bean
- * @description : 一般类
+ * @description : 用于反射时调用作为参数使用
  * @date : 2020-07-06 14:05
  **/
 @Data

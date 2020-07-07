@@ -1,6 +1,6 @@
 package org.clear.framework.bean;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -14,19 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class JsonUtil {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-
     /**
      * 将 POJO 转为 JSON
-     * @param obj
-     * @param <T>
-     * @return
      */
     public static <T> String toJson(T obj) {
         String json;
         try {
-            json = OBJECT_MAPPER.writeValueAsString(obj);
+            json = JSON.toJSONString(obj);
         } catch (Exception e) {
             log.error("convert POJO to JSON failure", e);
             throw new RuntimeException(e);
@@ -36,15 +30,11 @@ public final class JsonUtil {
 
     /**
      * 将 JSON 转为 POJO
-     * @param json
-     * @param type
-     * @param <T>
-     * @return
      */
-    public static <T> T fromJSON(String json, Class<T> type) {
+    public static <T> T fromJson(String json, Class<T> type) {
         T pojo;
         try {
-            pojo = OBJECT_MAPPER.readValue(json, type);
+            pojo = JSON.parseObject(json, type);
         } catch (Exception e) {
             log.error("convert JSON to POJO failure", e);
             throw new RuntimeException(e);
@@ -52,3 +42,4 @@ public final class JsonUtil {
         return pojo;
     }
 }
+
