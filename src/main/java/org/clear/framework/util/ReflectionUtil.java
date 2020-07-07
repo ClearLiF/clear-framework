@@ -31,8 +31,9 @@ public final class ReflectionUtil {
         Object o;
         try {
             o = cls.newInstance();
+            log.error("反射生成类为"+cls.getName());
         } catch (InstantiationException | IllegalAccessException e) {
-           log.error("new instance failure",e);
+           log.error("new instance failure 创建实例出错",e);
            throw new RuntimeException(e);
         }
         return o;
@@ -52,6 +53,7 @@ public final class ReflectionUtil {
     public static Object invokeMethod(Object obj, Method method,Object... args){
         Object invoke;
         try {
+            method.setAccessible(true);
              invoke = method.invoke(obj, args);
         } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("invoke method failure",e);

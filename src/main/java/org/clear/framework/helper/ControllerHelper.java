@@ -1,5 +1,6 @@
 package org.clear.framework.helper;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.clear.framework.annotation.RequestMap;
 import org.clear.framework.bean.Handler;
@@ -20,6 +21,7 @@ import java.util.Set;
  * @description : 控制器助手类
  * @date : 2020-06-30 8:54
  **/
+@Slf4j
 public class ControllerHelper {
     //用于存储请求与处理器的映射关系(action map)
     private static final Map<Request, Handler> ACTION_MAP =
@@ -37,20 +39,27 @@ public class ControllerHelper {
                     for (Method method : declaredMethods) {
                         if (method.isAnnotationPresent(RequestMap.class)) {
                             //从action注解中获取URL映射规则
-                            RequestMap requestMap = method.getAnnotation(RequestMap.class);
+                            RequestMap requestMap = method
+                                    .getAnnotation(RequestMap.class);
                             //获取映射
                             String mapping = requestMap.value();
                             //验证URL映射规则
+                            log.info("开始匹配mapping映射");
                             if (mapping.matches("\\w+:/\\w*")) {
                                 String[] split = mapping.split(":");
-                                if (ArrayUtil.isNotEmpty(split) && split.length == 2) {
+                                if (ArrayUtil.isNotEmpty(split)
+                                        && split.length == 2) {
                                     //获取请求方法与请求路径
                                     String requestMethod = split[0];
                                     String requestPath = split[1];
+                                    log.info("requestMethod=="+requestMethod);
+                                    log.info("requestPath=="+requestPath);
                                     Request request = new Request(requestMethod, requestPath);
                                     Handler handler = new Handler(controllerClass, method);
                                     //初始化Action Map
                                     ACTION_MAP.put(request, handler);
+                                }else {
+                                    throw new RuntimeException("url映射规则出错");
                                 }
                             }
                         }

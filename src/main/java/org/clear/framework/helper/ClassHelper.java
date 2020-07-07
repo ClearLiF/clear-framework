@@ -1,5 +1,6 @@
 package org.clear.framework.helper;
 
+import lombok.extern.slf4j.Slf4j;
 import org.clear.framework.annotation.Controller;
 import org.clear.framework.annotation.Service;
 import org.clear.framework.util.ClassUtil;
@@ -17,6 +18,7 @@ import java.util.Set;
  * @description : 类操作助手类
  * @date : 2020-06-29 21:31
  */
+@Slf4j
 public final class ClassHelper {
     /**
      * 定义类集合（用于存放所加载的类）
@@ -26,6 +28,7 @@ public final class ClassHelper {
     static {
         String basePackage = ConfigHelper.getAppBasePackage();
         //获取类集合
+        log.error(basePackage);
         CLASS_SET = ClassUtil.getClassSet(basePackage);
     }
 
@@ -77,6 +80,7 @@ public final class ClassHelper {
         for (Class<?> aClass : CLASS_SET) {
             if (aClass.isAnnotationPresent(Service.class)) {
                 classSet.add(aClass);
+                log.error("service调用"+aClass.getName());
             }
         }
         return classSet;
