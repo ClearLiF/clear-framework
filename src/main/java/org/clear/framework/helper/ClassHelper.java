@@ -5,6 +5,7 @@ import org.clear.framework.annotation.Controller;
 import org.clear.framework.annotation.Service;
 import org.clear.framework.util.ClassUtil;
 
+import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 

@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Spliterators;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -56,7 +57,7 @@ public final class ClassUtil {
      *
      * @param packageName the package name
      * @return java.util.Set<java.lang.Class < ?> >
-     * @description 获取指定包名下的所有类               需要根据包名转换为路径，读取class文件或者jar包，获取指定类名去加载类
+     * @description 获取指定包名下的所有类  例如org.clear.framework              需要根据包名转换为路径，读取class文件或者jar包，获取指定类名去加载类
      * @author ClearLi
      * @date 2020 /5/6 22:22
      */
@@ -103,11 +104,9 @@ public final class ClassUtil {
 
 
     private static void addClass(Set<Class<?>> classSet, String packagePath, String packageName) {
-        final File[] files = new File(packagePath).listFiles(new FileFilter() {
-            public boolean accept(File file) {
-                //只接收 .class 或者 是文件夹的 文件
-                return (file.isFile() && file.getName().endsWith(".class")) || file.isDirectory();
-            }
+        final File[] files = new File(packagePath).listFiles(file -> {
+            //只接收 .class 或者 是文件夹的 文件
+            return (file.isFile() && file.getName().endsWith(".class")) || file.isDirectory();
         });
         for (File file : files) {
             String fileName = file.getName();
@@ -145,15 +144,9 @@ public final class ClassUtil {
      * @param args the input arguments
      */
     public static void main(String[] args) {
-        try {
-            Enumeration<URL> urls = getClassLoader().getResources("D:/IDEAWorkSpace2/clear-framework/target/classes/org/clear/framework".replace(".", "/"));
-            while (urls.hasMoreElements()) {
-                URL url = urls.nextElement();
-                System.out.println(url.getPath());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Set<Class<?>> classSet = getClassSet("org.clear.framework");
+        System.out.println(classSet);
+
     }
 
 }

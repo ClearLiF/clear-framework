@@ -43,8 +43,8 @@ public class IocHelper {
                             log.error("获取ioc的type为"+type.getName());
                             //查找对应的生成类
                             Object beanFieldInstance = beanMap.get(type);
-                            log.error("获取ioc类为"+beanFieldInstance.getClass().getName());
                             if (beanFieldInstance!=null){
+                                log.error("获取ioc类为"+beanFieldInstance.getClass().getName());
                                 ReflectionUtil.setField(beanInstance
                                         ,declaredField
                                         ,beanFieldInstance);
