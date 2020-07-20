@@ -65,29 +65,7 @@ public class DispatcherServlet extends HttpServlet {
             Class<?> controllerClass = handler.getControllerClass();
             Object controllerBean = BeanHelper.getBean(controllerClass);
             // 创建请求参数对象
-            Map<String, Object> paramMap = new HashMap<String, Object>(16);
-            Enumeration<String> paramNames = req.getParameterNames();
-            while (paramNames.hasMoreElements()) {
-                String paramName = paramNames.nextElement();
-                String paramValue = req.getParameter(paramName);
-
-                paramMap.put(paramName, paramValue);
-            }
-
-            String body = CodecUtil.decodeURL(StreamUtil.getString(req.getInputStream()));
-            if (StringUtil.isNotEmpty(body)) {
-                String[] params = body.split("&");
-                if (ArrayUtil.isNotEmpty(params)) {
-                    for (String param : params) {
-                        String[] array = param.split("=");
-                        if (ArrayUtil.isNotEmpty(array) && array.length == 2) {
-                            String paramName = array[0];
-                            String paramValue = array[1];
-                            paramMap.put(paramName, paramValue);
-                        }
-                    }
-                }
-            }
+            Map<String, Object> paramMap= getRequestParam(req);
 
             Param param = new Param(paramMap);
 
@@ -134,5 +112,32 @@ public class DispatcherServlet extends HttpServlet {
             }
         }
 
+    }
+
+    private static Map<String, Object> getRequestParam(HttpServletRequest req) throws IOException {
+        Map<String, Object> paramMap = new HashMap<String, Object>(16);
+        Enumeration<String> paramNames = req.getParameterNames();
+        while (paramNames.hasMoreElements()) {
+            String paramName = paramNames.nextElement();
+            String paramValue = req.getParameter(paramName);
+
+            paramMap.put(paramName, paramValue);
+        }
+
+        String body = CodecUtil.decodeURL(StreamUtil.getString(req.getInputStream()));
+        if (StringUtil.isNotEmpty(body)) {
+            String[] params = body.split("&");
+            if (ArrayUtil.isNotEmpty(params)) {
+                for (String param : params) {
+                    String[] array = param.split("=");
+                    if (ArrayUtil.isNotEmpty(array) && array.length == 2) {
+                        String paramName = array[0];
+                        String paramValue = array[1];
+                        paramMap.put(paramName, paramValue);
+                    }
+                }
+            }
+        }
+        return paramMap;
     }
 }
