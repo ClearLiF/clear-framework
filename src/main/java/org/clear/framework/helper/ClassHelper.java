@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.clear.framework.annotation.Controller;
 import org.clear.framework.annotation.Service;
 import org.clear.framework.util.ClassUtil;
-
+import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -64,6 +64,23 @@ public final class ClassHelper {
         }
         return classSet;
     }
+    /**
+     * 获取应用包名下某父类（或接口）的所有子类（或实现类）
+     * @description
+     * @author ClearLi
+     * @date 2020/7/21 10:04
+     * @param superClass
+     * @return java.util.Set<java.lang.Class < ?>>
+     */
+    public static Set<Class<?>> getClassSetBySuper(Class<?> superClass) {
+        Set<Class<?>> classSet = new HashSet<Class<?>>();
+        for (Class<?> cls : CLASS_SET) {
+            if (superClass.isAssignableFrom(cls) && !superClass.equals(cls)) {
+                classSet.add(cls);
+            }
+        }
+        return classSet;
+    }
 
     /**
      * 无建议(默认)
@@ -89,7 +106,6 @@ public final class ClassHelper {
     /**
      * 无建议(默认)
      *
-     * @param
      * @return java.util.Set<java.lang.Class < ?> >
      * @description 获取应用包名下所有的Bean类  service controller
      * @author ClearLi
@@ -102,5 +118,21 @@ public final class ClassHelper {
         classSet.addAll(getControllerClassSet());
         return classSet;
     }
-
+    /**
+     * 获取应用包名下带有某注解的所有类
+     * @description
+     * @author ClearLi
+     * @date 2020/7/21 10:06
+     * @param annotationClass
+     * @return java.util.Set<java.lang.Class < ?>>
+     */
+    public static Set<Class<?>> getClassSetByAnnotation(Class<? extends Annotation> annotationClass) {
+        Set<Class<?>> classSet = new HashSet<Class<?>>();
+        for (Class<?> cls : CLASS_SET) {
+            if (cls.isAnnotationPresent(annotationClass)) {
+                classSet.add(cls);
+            }
+        }
+        return classSet;
+    }
 }

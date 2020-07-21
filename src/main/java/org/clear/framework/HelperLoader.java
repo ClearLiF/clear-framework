@@ -1,9 +1,6 @@
 package org.clear.framework;
 
-import org.clear.framework.helper.BeanHelper;
-import org.clear.framework.helper.ClassHelper;
-import org.clear.framework.helper.ControllerHelper;
-import org.clear.framework.helper.IocHelper;
+import org.clear.framework.helper.*;
 import org.clear.framework.util.ClassUtil;
 
 /**
@@ -19,6 +16,7 @@ public final class HelperLoader {
         Class<?>[] classList = {
                 ClassHelper.class,
                 BeanHelper.class,
+                AopHelper.class,
                 IocHelper.class,
                 ControllerHelper.class
         };
