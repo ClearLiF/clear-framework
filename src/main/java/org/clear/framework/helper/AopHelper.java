@@ -27,14 +27,12 @@ import org.clear.framework.proxy.TransactionProxy;
 
 
 /**
- * 方法拦截助手类
- *
- * @author huangyong
+ * 方法拦截助手类 代理主要生成查看{@link ProxyManager}
+ * @author clear
  * @since 1.0.0
  */
 @Slf4j
 public final class AopHelper {
-
 
     static {
         try {
@@ -44,6 +42,7 @@ public final class AopHelper {
                 Class<?> targetClass = targetEntry.getKey();
                 List<Proxy> proxyList = targetEntry.getValue();
                 Object proxy = ProxyManager.createProxy(targetClass, proxyList);
+                //{@link #remove}
                 BeanHelper.setBean(targetClass, proxy);
             }
         } catch (Exception e) {
@@ -56,12 +55,12 @@ public final class AopHelper {
      * @author ClearLi
      * @date 2020/7/21 10:30
      * @param
-     * @return java.util.Map<java.lang.Class < ?>,java.util.Set<java.lang.Class<?>>>
+     * @return java.util.Map <java.lang.Class < ?>,java.util.Set<java.lang.Class<?>>>
      */
     private static Map<Class<?>, Set<Class<?>>> createProxyMap() throws Exception {
         Map<Class<?>, Set<Class<?>>> proxyMap = new HashMap<Class<?>, Set<Class<?>>>();
         addAspectProxy(proxyMap);
-       // addTransactionProxy(proxyMap);
+        addTransactionProxy(proxyMap);
         return proxyMap;
     }
     /**

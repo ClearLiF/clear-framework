@@ -50,16 +50,17 @@ public final class ReflectionUtil {
      * @author ClearLi
      * @date 2020 /6/29 22:01
      */
-    public static Object invokeMethod(Object obj, Method method,Object... args){
-        Object invoke;
+    public static Object invokeMethod(Object obj, Method method, Object... args) {
+        Object result;
         try {
+            log.error("调用参数数目"+args.length);
             method.setAccessible(true);
-             invoke = method.invoke(obj, args);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            log.error("invoke method failure",e);
-            throw  new RuntimeException(e);
+            result = method.invoke(obj, args);
+        } catch (Exception e) {
+            log.error("invoke method failure", e);
+            throw new RuntimeException(e);
         }
-        return invoke;
+        return result;
     }
 
     /**

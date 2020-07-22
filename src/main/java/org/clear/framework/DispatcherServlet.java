@@ -2,9 +2,7 @@ package org.clear.framework;
 
 import lombok.extern.slf4j.Slf4j;
 import org.clear.framework.bean.*;
-import org.clear.framework.helper.BeanHelper;
-import org.clear.framework.helper.ConfigHelper;
-import org.clear.framework.helper.ControllerHelper;
+import org.clear.framework.helper.*;
 import org.clear.framework.util.*;
 
 import javax.servlet.ServletConfig;
@@ -40,6 +38,7 @@ public class DispatcherServlet extends HttpServlet {
         // 获取 ServletContext 对象（用来注册Servlet）
         ServletContext servletContext = config.getServletContext();
         registerServlet(servletContext);
+        UploadHelper.init(servletContext);
     }
     private void registerServlet(ServletContext servletContext) {
         ServletRegistration jspServlet = servletContext.getServletRegistration("jsp");
@@ -51,93 +50,67 @@ public class DispatcherServlet extends HttpServlet {
         defaultServlet.addMapping(ConfigHelper.getAppAssetPath() + "*");
     }
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //
-        String requestMethod = req.getMethod().toLowerCase();
-        String requestPath = req.getPathInfo();
-        //例如 post , /login
-        Handler handler = ControllerHelper.getHandler(requestMethod, requestPath);
-        log.error("请求的方法和地址为"+requestMethod+" : "+requestPath);
+    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        ServletHelper.init(request, response);
+        try {
+            String requestMethod = request.getMethod().toLowerCase();
+            String requestPath = request.getPathInfo();
+            Handler handler = ControllerHelper.getHandler(requestMethod, requestPath);
+            if (handler != null) {
+                Class<?> controllerClass = handler.getControllerClass();
+                Object controllerBean = BeanHelper.getBean(controllerClass);
 
-        if (handler != null) {
-            log.error("请求的方法为"+handler.getActionMethod().getName());
-            // 获取 Controller 类及其 Bean 实例
-            Class<?> controllerClass = handler.getControllerClass();
-            Object controllerBean = BeanHelper.getBean(controllerClass);
-            // 创建请求参数对象
-            Map<String, Object> paramMap= getRequestParam(req);
-
-            Param param = new Param(paramMap);
-
-            Object result;
-
-            // 调用 Action 方法
-            Method actionMethod = handler.getActionMethod();
-            if (param.isEmpty()) {
-                result = ReflectionUtil.invokeMethod(controllerBean, actionMethod);
-            } else {
-                result = ReflectionUtil.invokeMethod(controllerBean, actionMethod, param);
-            }
-
-            // 处理 Action 方法返回值
-            if (result instanceof View) {
-                //
-                View view = (View) result;
-                String path = view.getPath();
-                if (StringUtil.isNotEmpty(path)) {
-                    if (path.startsWith("/")) {
-                        resp.sendRedirect(req.getContextPath() + path);
-                    } else {
-                        Map<String, Object> model = view.getModel();
-                        for (Map.Entry<String, Object> entry : model.entrySet()) {
-                            req.setAttribute(entry.getKey(), entry.getValue());
-                        }
-                        req.getRequestDispatcher(ConfigHelper.getAppJspPath() + path)
-                                .forward(req, resp);
-                    }
+                Param param;
+                if (UploadHelper.isMultipart(request)) {
+                    param = UploadHelper.createParam(request);
+                } else {
+                    param = RequestHelper.createParam(request);
                 }
-            } else if (result instanceof Data) {
-                //
-                Data data = (Data) result;
-                Object model = data.getModel();
-                if (model != null) {
-                    resp.setContentType("application/json");
-                    resp.setCharacterEncoding("UTF-8");
-                    PrintWriter writer = resp.getWriter();
-                    String json = JsonUtil.toJson(model);
-                    writer.write(json);
-                    writer.flush();
-                    writer.close();
+
+                Object result;
+                Method actionMethod = handler.getActionMethod();
+                if (param.isEmpty()) {
+                    result = ReflectionUtil.invokeMethod(controllerBean, actionMethod);
+                } else {
+                    result = ReflectionUtil.invokeMethod(controllerBean, actionMethod,  (Object)param);
+                }
+
+                if (result instanceof View) {
+                    handleViewResult((View) result, request, response);
+                } else if (result instanceof Data) {
+                    handleDataResult((Data) result, response);
                 }
             }
+        } finally {
+            ServletHelper.destroy();
         }
-
     }
 
-    private static Map<String, Object> getRequestParam(HttpServletRequest req) throws IOException {
-        Map<String, Object> paramMap = new HashMap<String, Object>(16);
-        Enumeration<String> paramNames = req.getParameterNames();
-        while (paramNames.hasMoreElements()) {
-            String paramName = paramNames.nextElement();
-            String paramValue = req.getParameter(paramName);
-
-            paramMap.put(paramName, paramValue);
-        }
-
-        String body = CodecUtil.decodeURL(StreamUtil.getString(req.getInputStream()));
-        if (StringUtil.isNotEmpty(body)) {
-            String[] params = body.split("&");
-            if (ArrayUtil.isNotEmpty(params)) {
-                for (String param : params) {
-                    String[] array = param.split("=");
-                    if (ArrayUtil.isNotEmpty(array) && array.length == 2) {
-                        String paramName = array[0];
-                        String paramValue = array[1];
-                        paramMap.put(paramName, paramValue);
-                    }
+    private void handleViewResult(View view, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        String path = view.getPath();
+        if (StringUtil.isNotEmpty(path)) {
+            if (path.startsWith("/")) {
+                response.sendRedirect(request.getContextPath() + path);
+            } else {
+                Map<String, Object> model = view.getModel();
+                for (Map.Entry<String, Object> entry : model.entrySet()) {
+                    request.setAttribute(entry.getKey(), entry.getValue());
                 }
+                request.getRequestDispatcher(ConfigHelper.getAppJspPath() + path).forward(request, response);
             }
         }
-        return paramMap;
+    }
+
+    private void handleDataResult(Data data, HttpServletResponse response) throws IOException {
+        Object model = data.getModel();
+        if (model != null) {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            PrintWriter writer = response.getWriter();
+            String json = JsonUtil.toJson(model);
+            writer.write(json);
+            writer.flush();
+            writer.close();
+        }
     }
 }

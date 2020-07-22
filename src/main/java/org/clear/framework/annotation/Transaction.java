@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * 定义需要事务控制的方法
  *
- * @author huangyong
+ * @author clearli
  * @since 1.0.0
  */
 @Target(ElementType.METHOD)
