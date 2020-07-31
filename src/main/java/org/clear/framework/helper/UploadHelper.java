@@ -80,7 +80,7 @@ public final class UploadHelper {
                     if (CollectionUtil.isNotEmpty(fileItemList)) {
                         for (FileItem fileItem : fileItemList) {
                             if (fileItem.isFormField()) {
-                                String fieldValue = fileItem.getString("UTF-8");
+                                String fieldValue = fileItem.getString(String.valueOf(StandardCharsets.UTF_8));
                                 formParamList.add(new FormParam(fieldName, fieldValue));
                             } else {
                                 String fileName = FileUtil.getRealFileName(new String(fileItem.getName().getBytes(), StandardCharsets.UTF_8));
