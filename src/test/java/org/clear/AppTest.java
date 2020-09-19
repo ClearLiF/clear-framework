@@ -26,7 +26,8 @@ public class AppTest
     @Test
     public void TestName(){
         People people = new People();
-        people.setName("liqd");
+        people.setName("liqd3");
+        System.out.println("465456");
         people.setPassword("123456");
         String x = JsonUtil.toJson(people);
         System.out.println(x);
