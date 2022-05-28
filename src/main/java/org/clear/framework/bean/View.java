@@ -16,7 +16,7 @@ import java.util.Map;
 @Data
 public class View {
     /**
-     * 视图路径
+     * 视图路径11
      */
     private String path;
     /**
